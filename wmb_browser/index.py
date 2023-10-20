@@ -4,8 +4,10 @@ from _app import APP_ROOT_NAME, app, server
 from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
+
 from wmb_browser.apps.home import home_layout
-from wmb_browser.apps.dynamic_browser import create_dynamic_browser_layout
+# from wmb_browser.apps.dynamic_browser import create_dynamic_browser_layout
+from wmb_browser.apps.human_browser import initial_human_browser_layout
 
 LOGO_IMG_URL = (
     "https://raw.githubusercontent.com/lhqing/wmb-browser/master/"
@@ -75,13 +77,12 @@ def display_page(pathname, search, total_url):
         # init callback url is None
         raise PreventUpdate
     elif (pathname == f"/{APP_ROOT_NAME}home") or (pathname == f"/{APP_ROOT_NAME}"):
-        
         layout = home_layout
-    elif pathname == f"/{APP_ROOT_NAME}dynamic_browser":
-        layout = create_dynamic_browser_layout(search)
+    # elif pathname == f"/{APP_ROOT_NAME}dynamic_browser":
+    #     layout = create_dynamic_browser_layout(search)
     # add layout functions here based on pathname
-    # elif pathname == f"/{APP_ROOT_NAME}app1":
-    #     layout = app1_layout(search_dict)
+    elif pathname == f"/{APP_ROOT_NAME}human_browser":
+        layout = initial_human_browser_layout()
     else:
         layout = None
 
@@ -95,7 +96,6 @@ def display_page(pathname, search, total_url):
 
 if __name__ == "__main__":
     app.run(debug=True, port="1234")
-
 
 # pip install gunicorn
 # gunicorn -w 4 myapp:app
