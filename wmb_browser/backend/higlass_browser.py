@@ -8,10 +8,13 @@ import pandas as pd
 from higlass.api import display, gather_plugin_urls
 
 from .colors import color_collection
-from .genome import mm10
 
-TRACK_TABLE_PATH = "/browser/metadata/HiglassTracks.csv.gz"
-CHROM_SIZES_PATH = "/browser/genome/mm10.main.chrom.sizes"
+# from .genome import mm10
+
+# TRACK_TABLE_PATH = "/browser/metadata/HiglassTracks.csv.gz"
+TRACK_TABLE_PATH = "/home/bmiao/human-browser-data/Higlass/HiglassTracks.csv.gz"
+# CHROM_SIZES_PATH = "/browser/genome/mm10.main.chrom.sizes"
+CHROM_SIZES_PATH = "/home/bmiao/human-browser-data/Higlass/mm10.main.chrom.sizes"
 
 DEFAULT_HEIGHT_1D = 25
 DEFAULT_HEIGHT_2D = 450
@@ -245,6 +248,7 @@ class HiglassBrowser:
 
             all_tracks[self.pos_1d].append(_t)
 
+        # print("All tracks", all_tracks)
         view = higlass.view(*((v, k) for k, vl in all_tracks.items() for v in vl), width=view_width)
         return view
 
@@ -587,6 +591,8 @@ class HiglassBrowser:
         # add genome tracks in the end so its on the outside
         right_track_list += genome_tracks_right[::-1]
 
+        # print("left_tract_list", left_track_list)
+        # print("right_track_list", right_track_list)
         v0 = higlass.view(*left_track_list, width=6).domain(x=v0_x, y=v0_y)
         v1 = higlass.view(*right_track_list, width=6).domain(x=zoom_domain_x, y=zoom_domain_y)
 

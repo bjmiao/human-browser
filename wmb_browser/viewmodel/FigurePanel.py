@@ -5,7 +5,7 @@ from dash import dcc, html
 class FigurePanel(object):
     """The (abstract) bass class for the single figure panel"""
 
-    PanelString = "Figure"
+    FigureString = "Figure"
     _DEFAULT_GRAPH_CONFIG = {
         "scrollZoom": True,
         "displaylogo": False,
@@ -80,9 +80,10 @@ class FigurePanel(object):
         coord = figure_json.get("coord", "")
         colorby = figure_json.get("colorby", "")
         graph_label = figure_json.get("label", f"{figure_type}_{coord}_{colorby}")
-        graph_text_description = cls._generate_text_description_layout(figure_type, panel_index, figure_index)
+        cls._generate_text_description_layout(figure_type, panel_index, figure_index)
         graph = cls._generate_graph_panel(figure_json)
-        graph_tab = [dbc.Row([dbc.Col([graph])]), dbc.Row([dbc.Col([graph_text_description])])]
+        # graph_tab = [dbc.Row([dbc.Col([graph])]), dbc.Row([dbc.Col([graph_text_description])])]
+        graph_tab = [dbc.Row([dbc.Col([graph])])]
 
         graph_controls = cls._generate_control_panel(figure_json)
         tabs = dbc.Col(

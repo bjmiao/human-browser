@@ -1,38 +1,115 @@
 import json
+from functools import reduce
 
 import dash_bootstrap_components as dbc
-from dash import Input, Output, Patch, State, callback, html
+from dash import ALL, MATCH, Input, Output, Patch, State, callback, dcc, html
 from dash.exceptions import PreventUpdate
 
 from wmb_browser.viewmodel import CategoricalFigurePanel, ContinuousFigurePanel
 
-DEMO_TEXT = """
-{"coord": "tsne", "datasource": "local",
+DEMO_TEXT = """\
+{"coord": "tsne", "datasource": "mCG_Inhi",
     "figures": [
         {"type": "continuous", "colorby": "_Region"},
         {"type": "categorical", "colorby": "_mCGFrac"}
     ]
 }
 """
-input_div = html.Div(
+input_div = dbc.Card(
     [
-        dbc.Container([html.H1("Select Dissection and Gene for scatter plot")]),
-        dbc.Container(
+        dbc.CardHeader("Create your browser layout"),
+        dbc.CardBody(
             [
-                dbc.Col(
-                    dbc.Textarea(id="new-item-input", style={"height": 100}, value=DEMO_TEXT),
-                    className="mb-1",
-                    xxl=10,
-                    xl=10,
-                    lg=8,
-                    md=6,
-                    sm=12,
+                dcc.Markdown("""
+                    ## Human brain atlas
+
+                    Welcome to the human brain atlas! You can gain a quick overview of the data from the
+                    recent Science paper [Single-cell DNA methylation and 3D genome architecture in the human brain](!https://doi.org/10.1126/science.adf5357).
+                """),
+                dbc.Container(
+                    [
+                        dbc.Row(
+                            [
+                                dbc.Col(
+                                    dbc.Button(
+                                        "Add Figure",
+                                        className="my-1 mr-2",
+                                        outline=True,
+                                        size="sm",
+                                        id="add-figure",
+                                        style={
+                                            "height": 100,
+                                            "background-color": "#2962a1",  # Set background color
+                                            "color": "#ffffff",  # Set text color
+                                            "text-align": "center",  # Set text alignment
+                                            "font-size": "20px",  # Set font size
+                                        },
+                                    )
+                                ),
+                                dbc.Col(
+                                    dbc.Textarea(id="new-item-input", style={"height": 100}, value=DEMO_TEXT),
+                                    className="mb-1",
+                                    xxl=10,
+                                    xl=10,
+                                    lg=8,
+                                    md=6,
+                                    sm=12,
+                                ),
+                            ]
+                        )
+                    ]
                 ),
-                dbc.Col(dbc.Button("Add Figure", className="my-1 mr-2", outline=True, size="sm", id="add-figure")),
             ]
         ),
     ]
 )
+
+
+# Panel control
+@callback(
+    Output({"type": "click-data", "panel-index": MATCH}, "children"),
+    Output({"type": "continuous-graph", "figure-index": ALL, "panel-index": MATCH}, "clickData"),
+    Output({"type": "categorical-graph", "figure-index": ALL, "panel-index": MATCH}, "clickData"),
+    Input({"type": "continuous-graph", "figure-index": ALL, "panel-index": MATCH}, "clickData"),
+    Input({"type": "categorical-graph", "figure-index": ALL, "panel-index": MATCH}, "clickData"),
+    prevent_initial_call=True,
+)
+def showClickData(click_cont_data, click_cat_data):
+    """React to click data, callback from clickData to the textbox"""
+    num_cont_graph = len(click_cont_data)
+    num_cat_graph = len(click_cat_data)
+    # print("Cont data", click_cont_data)
+    # print("Cat data", click_cat_data)
+
+    # find the non-none click data
+    click_data = reduce(lambda a, b: a or b, click_cont_data + click_cat_data)
+    # print(click_data)
+    point = click_data["points"][0]
+    x_value = point["x"]
+    y_value = point["y"]
+
+    text = f"Clicked point: x={x_value}, y={y_value}"
+    # Here we returned two sets of None to clear the click-data, so that we
+    # can know what is the newly-click data for each click. This genius solution is posted
+    # here: https://community.plotly.com/t/is-there-a-way-to-clear-clickdata/8708/10
+    return text, [None] * num_cont_graph, [None] * num_cat_graph
+
+
+# @callback(
+#     Output({"type": "categorical-click-data", "panel-index": MATCH}, "children"),
+#     Input({"type": "categorical-graph", "figure-index": MATCH, "panel-index": MATCH}, "clickData"),
+#     prevent_initial_call=True,
+# )
+# def showCatClickData(click_data):
+#     """React to click data, callback from clickData to the textbox"""
+#     print(click_data)
+#     point = click_data["points"][0]
+#     x_value = point["x"]
+#     y_value = point["y"]
+#     color_value = point["marker.color"]
+
+#     text = f"Clicked point: x={x_value}, y={y_value}\ncategory={color_value}"
+#     return text
 
 
 def _generate_figure_div(input_string, panel_index):
@@ -85,8 +162,47 @@ def _generate_figure_div(input_string, panel_index):
         else:
             print(f"Unknown figure type {figure_type}. This panel will not be shown")
 
-    panel_wrapper = dbc.Container([dbc.Row([dbc.Col([figure]) for figure in all_figures])])
+    text_description_layout = html.Div(
+        [
+            dcc.Markdown("""
+            **Click Data**
 
+            Click on points in the graph.
+        """),
+            # html.Pre(/id='click-data'),
+            html.Pre(
+                id={
+                    "type": "click-data",
+                    "panel-index": panel_index,
+                }
+            ),
+            dcc.Clipboard(
+                # target_id='click-data',
+                target_id={
+                    "type": "click-data",
+                    "panel-index": panel_index,
+                },
+                title="copy",
+                style={
+                    "display": "inline-block",
+                    "fontSize": 20,
+                    "verticalAlign": "top",
+                },
+            ),
+        ],
+        className="three columns",
+    )
+    panel_wrapper = dbc.Card(
+        [
+            dbc.CardHeader(f"Panel {panel_index}: Data source: {figure_json['datasource']}"),
+            dbc.CardBody(
+                [
+                    dbc.Row([dbc.Col([figure]) for figure in all_figures]),
+                    text_description_layout,
+                ]
+            ),
+        ]
+    )
     return True, panel_wrapper
 
 

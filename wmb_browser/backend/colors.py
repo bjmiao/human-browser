@@ -16,7 +16,7 @@ class Color:
     def __init__(self):
         """Initialize the color definitions."""
         self._alias = {k.lower(): v for k, v in _palette_alias.items()}
-        color_file_path = "/browser/metadata/TotalPaletteDict.lib"
+        color_file_path = "/home/bmiao/human-browser-data/Higlass/TotalPaletteDict.lib"
         self._color_dict = joblib.load(color_file_path)
         return
 

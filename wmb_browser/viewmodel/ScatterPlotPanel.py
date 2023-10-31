@@ -79,22 +79,7 @@ def update_scatter_graph_relayout_data(cont_args, cat_args):
 class ContinuousFigurePanel(FigurePanel):
     """Implementation of figure panel for continuous scatter plot"""
 
-    PanelString = "ContinuousFigure"
-
-    @callback(
-        Output({"type": "continuous-click-data", "figure-index": MATCH, "panel-index": MATCH}, "children"),
-        Input({"type": "continuous-graph", "figure-index": MATCH, "panel-index": MATCH}, "clickData"),
-        prevent_initial_call=True,
-    )
-    def showClickData(click_data):
-        """React to click data, callback from clickData to the textbox"""
-        print(click_data)
-        point = click_data["points"][0]
-        x_value = point["x"]
-        y_value = point["y"]
-
-        text = f"Clicked point: x={x_value}, y={y_value}"
-        return text
+    FigureString = "ContinuousFigure"
 
     @classmethod
     def _generate_graph_panel(cls, figure_json):
@@ -202,23 +187,7 @@ class ContinuousFigurePanel(FigurePanel):
 class CategoricalFigurePanel(FigurePanel):
     """Categorical scatter plot"""
 
-    PanelString = "CategoricalFigure"
-
-    @callback(
-        Output({"type": "categorical-click-data", "figure-index": MATCH, "panel-index": MATCH}, "children"),
-        Input({"type": "categorical-graph", "figure-index": MATCH, "panel-index": MATCH}, "clickData"),
-        prevent_initial_call=True,
-    )
-    def showCatClickData(click_data):
-        """React to click data, callback from clickData to the textbox"""
-        print(click_data)
-        point = click_data["points"][0]
-        x_value = point["x"]
-        y_value = point["y"]
-        color_value = point["marker.color"]
-
-        text = f"Clicked point: x={x_value}, y={y_value}\ncategory={color_value}"
-        return text
+    FigureString = "CategoricalFigure"
 
     @classmethod
     def _generate_graph_panel(cls, figure_json):

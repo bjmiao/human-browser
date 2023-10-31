@@ -4,8 +4,10 @@ import pandas as pd
 import plotly.express as px
 import scanpy
 from dash.exceptions import PreventUpdate
+from plotly.graph_objs import Layout
 
-DEFAULT_DATA_PATH = "C:\\Users\\bimia\\Documents\\Workspace\\eckarlab_rotation_20230928\\browser_sample_data\\"
+# DEFAULT_DATA_PATH = "C:\\Users\\bimia\\Documents\\Workspace\\eckarlab_rotation_20230928\\browser_sample_data\\"
+DEFAULT_DATA_PATH = "/home/bmiao/human-browser-data"
 
 
 def get_scatter_from_precompute_result(datasource, coord, color_type, colorby):
@@ -49,4 +51,14 @@ def get_scatter_from_precompute_result(datasource, coord, color_type, colorby):
 
     df = pd.DataFrame({"x": X, "y": Y, "color": color_value})
     fig = px.scatter(data_frame=df, x="x", y="y", color="color")
+    fig.update_coloraxes(showscale=False)
+    fig.update(layout_showlegend=False)
+    fig.update_layout(
+        Layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            xaxis={"visible": False},
+            yaxis={"visible": False},
+        )
+    ),
     return fig

@@ -5,6 +5,7 @@ from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
+from wmb_browser.apps.higlass_demo import higlass_demo_layout
 from wmb_browser.apps.home import home_layout
 # from wmb_browser.apps.dynamic_browser import create_dynamic_browser_layout
 from wmb_browser.apps.human_browser import initial_human_browser_layout
@@ -22,7 +23,7 @@ def get_header():
             dbc.Nav(
                 [
                     dbc.NavItem(dbc.NavLink("Home", href=f"/{APP_ROOT_NAME}home")),
-                    dbc.NavItem(dbc.NavLink("Dynamic Browser", href=f"/{APP_ROOT_NAME}dynamic_browser")),
+                    dbc.NavItem(dbc.NavLink("Human Browser", href=f"/{APP_ROOT_NAME}human_browser")),
                 ],
                 className="mr-5",
                 navbar=True,
@@ -81,6 +82,8 @@ def display_page(pathname, search, total_url):
     # elif pathname == f"/{APP_ROOT_NAME}dynamic_browser":
     #     layout = create_dynamic_browser_layout(search)
     # add layout functions here based on pathname
+    elif pathname == f"/{APP_ROOT_NAME}higlass_demo":
+        layout = higlass_demo_layout
     elif pathname == f"/{APP_ROOT_NAME}human_browser":
         layout = initial_human_browser_layout()
     else:
