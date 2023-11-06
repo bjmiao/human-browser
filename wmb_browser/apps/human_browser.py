@@ -1,22 +1,58 @@
-import json
-
 import dash_bootstrap_components as dbc
-from dash import ALL, MATCH, Input, Output, Patch, State, callback, dcc, html
+from dash import Input, Output, Patch, State, callback, dcc, html
 from dash.exceptions import PreventUpdate
 
 # from wmb_browser.viewmodel import CategoricalFigurePanel, ContinuousFigurePanel
 from wmb_browser.viewmodel.ScatterPlotDiv import ScatterPlotDiv
-from wmb_browser.backend.human_dataset import human_datasets as sapien_dataset
 
-DEMO_TEXT = """\
-{"coord": "tsne", "datasource": "mCH_Inhi",
-    "figures": [
-        {"type": "scatter", "colorby": "_Region"},
-        {"type": "scatter", "colorby": "_mCGFrac"}
+add_panel_button = dbc.Button(
+    "Add panel",
+    className="my-1 mr-2",
+    outline=True,
+    size="sm",
+    id="add-panel",
+    style={
+        "height": 100,
+        "background-color": "#2962a1",  # Set background color
+        "color": "#ffffff",  # Set text color
+        "text-align": "center",  # Set text alignment
+        "font-size": "20px",  # Set font size
+    },
+)
+
+DATASOURCE_OPTIONS = [
+    {"label": f, "value": f} for f in ["mCH_Inhi", "mCH_Exhi", "mCG_Inhi", "mCG_Exhi", "mCH_Nonneuron", "mCG_Nonneuron"]
+]
+COORD_OPTIONS = [{"label": f, "value": f} for f in ("tsne", "umap")]
+FIGURE_TEXT_DEFAULT_VALUE = "scatter:_Region,scatter:_mCGFrac,scatter:DDX11L1"
+# set_config_area = dbc.Textarea(id="new-item-input", style={"height": 100}, value=DEMO_TEXT),
+set_config_area = dbc.Container(
+    [
+        dbc.Row(
+            [
+                dbc.Col(html.P("Datasource:"), width=2),
+                dbc.Col(
+                    dbc.Select(
+                        id="datasource-select", options=DATASOURCE_OPTIONS, value=DATASOURCE_OPTIONS[0]["value"]
+                    ),
+                    width=4,
+                ),
+                dbc.Col(html.P("Coordinate:"), width=2),
+                dbc.Col(dbc.Select(id="coord-select", options=COORD_OPTIONS, value=COORD_OPTIONS[0]["value"]), width=4),
+            ]
+        ),
+        dbc.Row(
+            [
+                dbc.Col(html.P("Figures:"), width=2),
+                dbc.Col(dbc.Textarea(id="figure-text", value=FIGURE_TEXT_DEFAULT_VALUE), width=10),
+            ]
+        ),
     ]
-}
-"""
-input_div = dbc.Card([
+)
+
+
+input_div = dbc.Card(
+    [
         dbc.CardHeader("Create your browser layout"),
         dbc.CardBody(
             [
@@ -30,24 +66,9 @@ input_div = dbc.Card([
                     [
                         dbc.Row(
                             [
+                                dbc.Col(add_panel_button),
                                 dbc.Col(
-                                    dbc.Button(
-                                        "Add panel",
-                                        className="my-1 mr-2",
-                                        outline=True,
-                                        size="sm",
-                                        id="add-panel",
-                                        style={
-                                            "height": 100,
-                                            "background-color": "#2962a1",  # Set background color
-                                            "color": "#ffffff",  # Set text color
-                                            "text-align": "center",  # Set text alignment
-                                            "font-size": "20px",  # Set font size
-                                        },
-                                    )
-                                ),
-                                dbc.Col(
-                                    dbc.Textarea(id="new-item-input", style={"height": 100}, value=DEMO_TEXT),
+                                    set_config_area,
                                     className="mb-1",
                                     xxl=10,
                                     xl=10,
@@ -65,22 +86,22 @@ input_div = dbc.Card([
 )
 
 
-def _generate_panel_dev(input_string, panel_index):
+def _generate_panel_dev(figure_json, panel_index):
     """Generate a figure.
 
     Args:
-        input_string should be lines of JSON strings indicating
+        figure-json should be lines of JSON strings indicating
             what type of plots should be generated
     Returns:
         success: True or false, whether this add-panel succeed
         panel_dev: the Div for the figure
     """
-    figure_json = None
-    try:
-        figure_json = json.loads(input_string)
-    except json.decoder.JSONDecodeError as e:
-        print(e)
-        raise PreventUpdate
+    # figure_json = None
+    # try:
+    #     figure_json = json.loads(input_string)
+    # except json.decoder.JSONDecodeError as e:
+    #     print(e)
+    #     raise PreventUpdate
     figure_container = None
     # figure_types = figure_json['type']
     # if type(figure_types) == str: # only one type:
@@ -146,23 +167,27 @@ def _generate_panel_dev(input_string, panel_index):
         ],
         className="three columns",
     )
-    figure_style_template = {"display": "inline-block", "vertical-align": "top",}
+    figure_style_template = {
+        "display": "inline-block",
+        "vertical-align": "top",
+    }
     panel_wrapper = dbc.Card(
         [
             dbc.CardHeader(f"Panel {panel_index}: Data source: {figure_json['datasource']}"),
             dbc.CardBody(
-                    [
-                        html.Div(
-                            [html.Div(figure, style=figure_style_template) for figure in all_figures],
-                            style={"display":"block",
-                                   "overflow-x": "auto",
-                                   "overflow-y":"scroll",
-                                   "white-space": "nowrap"
-                            },
-                        ),
-                        html.Div(text_description_layout)
-                    ],
-                ),
+                [
+                    html.Div(
+                        [html.Div(figure, style=figure_style_template) for figure in all_figures],
+                        style={
+                            "display": "block",
+                            "overflow-x": "auto",
+                            "overflow-y": "scroll",
+                            "white-space": "nowrap",
+                        },
+                    ),
+                    html.Div(text_description_layout),
+                ],
+            ),
         ],
     )
     return True, panel_wrapper
@@ -171,15 +196,24 @@ def _generate_panel_dev(input_string, panel_index):
 @callback(
     Output("figure-div", "children", allow_duplicate=True),
     Input("add-panel", "n_clicks"),
-    State("new-item-input", "value"),
+    # State("new-item-input", "value"),
+    State("datasource-select", "value"),
+    State("coord-select", "value"),
+    State("figure-text", "value"),
     prevent_initial_call=True,
 )
-def add_panel(n_clicks, input_string):
+def add_panel(n_clicks, datasource, coord, figure_text):
     """Add a figure given the input string
 
     Args:
     - n_clicks: used as the panel index (1-based)
-    - input_string: should be in a json format
+    - datasource, coord and figure_text: the input arguments.
+      We construct them into a formated dict
+      DEMO: {"coord": "tsne", "datasource": "mCH_Inhi",
+       "figures": [ {"type": "scatter", "colorby": "_Region"},
+        {"type": "scatter", "colorby": "_mCGFrac"}
+       ]
+      }
     Returns:
     - a panel of figure in a Div
     """
@@ -187,9 +221,15 @@ def add_panel(n_clicks, input_string):
         raise PreventUpdate
     # updated_localstorage = Patch()
     # updated_localstorage['data'] = localstorage + [input_string]
+    figure_json = {
+        "datasource": datasource,
+        "coord": coord,
+        "figures": [{"type": x.split(":")[0], "colorby": x.split(":")[1]} for x in figure_text.split(",")],
+    }
+    print(figure_json)
 
     # get this div
-    success, new_panel_dev = _generate_panel_dev(input_string, panel_index=n_clicks)
+    success, new_panel_dev = _generate_panel_dev(figure_json, panel_index=n_clicks)
     updated_panel_dev = Patch()
     if success:
         updated_panel_dev.append(new_panel_dev)
@@ -197,11 +237,12 @@ def add_panel(n_clicks, input_string):
         raise PreventUpdate
     return updated_panel_dev
 
+
 AVAILABLE_DATASETS = ["mCG", "mCH"]
+
 
 def initial_human_browser_layout():
     """Dynamically initialized the browser layout"""
-    
     human_browser_layout = html.Div(
         [
             html.Div(input_div),
