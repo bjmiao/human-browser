@@ -3,7 +3,7 @@ from dash import Input, Output, Patch, State, callback, dcc, html
 from dash.exceptions import PreventUpdate
 
 # from wmb_browser.viewmodel import CategoricalFigurePanel, ContinuousFigurePanel
-from wmb_browser.viewmodel.ScatterPlotDiv import ScatterPlotDiv
+from human_browser.viewmodel.ScatterPlotDiv import ScatterPlotDiv
 
 add_panel_button = dbc.Button(
     "Add panel",

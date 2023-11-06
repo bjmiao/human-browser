@@ -9,8 +9,8 @@ from dash.exceptions import PreventUpdate
 import plotly.express as px
 from plotly.graph_objs import Layout
 
-from wmb_browser.backend.human_dataset import human_datasets
-from wmb_browser.viewmodel.FigureDiv import FigureDiv
+from human_browser.backend.human_dataset import human_datasets
+from human_browser.viewmodel.FigureDiv import FigureDiv
 
 CELL_META_CLIP_INFO = """
 **Cell ID**: {cell_id} ({assay})

@@ -36,14 +36,14 @@ MODALITY_PALETTE = {
 
 GENOME_TILESETS = {
     "mm10_chrom_size": higlass.remote(
-        uid="EtrWT0VtScixmsmwFSd7zg",
+        uid="Cltmj1lwRe20350pbQMHyA",
         server="http://higlass.io/api/v1",
-        name="mm10 Chrom Sizes",
+        name="HBA:hic:Amy",
     ),
     "mm10_gene_annot": higlass.remote(
-        uid="QDutvmyiSrec5nX4pA5WGQ",
+        uid="OPA_4BraQc6TSe_Pv_0m2g",
         server="http://higlass.io/api/v1",
-        name="mm10 Gene Annotations",
+        name="HBA:hic:ASC",
     ),
 }
 
@@ -614,6 +614,8 @@ class HiglassBrowser:
             viewconf = viewconf.viewconf()
 
         view_dict = viewconf.dict()
+        from pprint import pprint
+        pprint(view_dict)
         view_dict["trackSourceServers"] = [self.server, "http://higlass.io/api/v1"]
         for _v in view_dict["views"]:
             if self.toggle_position_search_box:

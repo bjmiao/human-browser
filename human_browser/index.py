@@ -5,10 +5,10 @@ from dash import callback, dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-from wmb_browser.apps.higlass_demo import higlass_demo_layout
-from wmb_browser.apps.home import home_layout
+from human_browser.apps.higlass_demo import higlass_demo_layout
+from human_browser.apps.home import home_layout
 # from wmb_browser.apps.dynamic_browser import create_dynamic_browser_layout
-from wmb_browser.apps.human_browser import initial_human_browser_layout
+from human_browser.apps.human_browser import initial_human_browser_layout
 
 LOGO_IMG_URL = (
     "https://raw.githubusercontent.com/lhqing/wmb-browser/master/"
