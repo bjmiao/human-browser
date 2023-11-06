@@ -1,6 +1,6 @@
-from .ScatterPlotPanel import CategoricalFigurePanel, ContinuousFigurePanel
+# from .ScatterPlotPanel import CategoricalFigurePanel, ContinuousFigurePanel
 
-__ALL__ = [
-    "ContinuousFigurePanel",
-    "CategoricalFigurePanel",
-]
+# __ALL__ = [
+    # "ContinuousFigurePanel",
+    # "CategoricalFigurePanel",
+# ]

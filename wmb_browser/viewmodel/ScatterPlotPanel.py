@@ -5,7 +5,7 @@ from dash.exceptions import PreventUpdate
 
 from wmb_browser.datamodel.scatterplot import \
     get_scatter_from_precompute_result
-from wmb_browser.viewmodel.FigurePanel import FigurePanel
+from wmb_browser.viewmodel.FigureDiv import FigurePanel
 
 
 @callback(

@@ -2,8 +2,8 @@ import dash_bootstrap_components as dbc
 from dash import dcc, html
 
 
-class FigurePanel(object):
-    """The (abstract) bass class for the single figure panel"""
+class FigureDiv(object):
+    """The (abstract) bass class for the single figure div within a panel"""
 
     FigureString = "Figure"
     _DEFAULT_GRAPH_CONFIG = {
@@ -83,16 +83,13 @@ class FigurePanel(object):
         cls._generate_text_description_layout(figure_type, panel_index, figure_index)
         graph = cls._generate_graph_panel(figure_json)
         # graph_tab = [dbc.Row([dbc.Col([graph])]), dbc.Row([dbc.Col([graph_text_description])])]
-        graph_tab = [dbc.Row([dbc.Col([graph])])]
+        # graph_tab = [dbc.Row([dbc.Col([graph])])]
 
         graph_controls = cls._generate_control_panel(figure_json)
-        tabs = dbc.Col(
-            dbc.Tabs(
-                [
-                    dbc.Tab(graph_tab, label=graph_label),
-                    dbc.Tab(graph_controls, label="Control"),
-                ]
-            ),
-            class_name="mt-3",
-        )
+        tabs = dbc.Tabs(
+                    [
+                        dbc.Tab(graph, label=graph_label),
+                        dbc.Tab(graph_controls, label="Control"),
+                    ]
+                ),
         return tabs

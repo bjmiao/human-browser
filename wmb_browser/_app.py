@@ -17,7 +17,7 @@ app = dash.Dash(
     routes_pathname_prefix=f"/{APP_ROOT_NAME}",
     requests_pathname_prefix=f"/{APP_ROOT_NAME}",
 )
-app.title = "WMB Browser"
+app.title = "Human Browser"
 
 server = app.server
 
